@@ -18,7 +18,6 @@ from django.urls import path, include
 from ro_app import views
 
 urlpatterns = [
-    path('', views.index, name= 'home'),
     path('admin/', admin.site.urls),
     path('roapp/',include('ro_app.urls')),
 ]

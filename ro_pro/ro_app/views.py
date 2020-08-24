@@ -12,8 +12,6 @@ from django.http import JsonResponse
 import json
 
 
-def index(request):
-   return render( request, "ro_app/index.html")
 
 
 @login_required
@@ -51,7 +49,6 @@ def add_view(request):
             site_form.instance.rt_gf = rt_gf_value
             site_form.instance.str_type = str_type_value
             site_form.instance.height = height_value
-            #site_form.instance.in_progress_date = site_form.cleaned_data['status']
 
             if str(site_form.cleaned_data['status']) == "Pending":
                 site_form.instance.in_progress_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -61,23 +58,23 @@ def add_view(request):
             site_form.save(commit=True)
             return redirect('search')
 
-    return render( request, "ro_app/sitedata_form.html", {'form': site_form})
+    return render( request, "ro_app/ro_main.html", {'form': site_form})
 
 @login_required
 def update_view(request, pk):
     context = {}
     obj = get_object_or_404(SiteData, id = pk)
-    form = SiteForm(request.POST or None, instance = obj) 
-    if form.is_valid():
-        form.save(commit=False)
-        if form.cleaned_data['status'] == "Pending":
-            form.instance.in_progress_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        elif form.cleaned_data['status'] == "Done":
-            form.instance.done_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        form.save(commit=True)
+    site_form = SiteForm(request.POST or None, instance = obj) 
+    if site_form.is_valid():
+        site_form.save(commit=False)
+        if site_form.cleaned_data['status'] == "Pending":
+            site_form.instance.in_progress_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        elif site_form.cleaned_data['status'] == "Done":
+            site_form.instance.done_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        site_form.save(commit=True)
         return redirect('search')
-    context["form"] = form 
-    return render(request, "ro_app/sitedata_form.html", context) 
+    context["form"] = site_form 
+    return render(request, "ro_app/ro_main.html", context) 
 
 @login_required
 def site_remove(request, pk):
@@ -94,7 +91,7 @@ class SearchView(ListView):
 
 class SiteDetailView(DetailView):
     model = SiteData
-    template_name = 'ro_app/site_detail.html'
+    template_name = 'ro_app/ro_main.html'
     context_object_name = 'site_details'
 
 def autocomplete(request):
@@ -104,4 +101,4 @@ def autocomplete(request):
         for product in qs:
             titles.append(product.email_address)
         return JsonResponse(titles, safe=False)
-    return render(request, 'core/sitedata_form.html')
+    return render(request, 'ro_app/ro_main.html')

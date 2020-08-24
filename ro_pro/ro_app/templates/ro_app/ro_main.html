@@ -1,10 +1,25 @@
-{% extends 'ro_app/index.html' %}
+<!DOCTYPE html>
+{% load static %}
+{% load crispy_forms_tags %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Civil App</title>
 
-{% block title %}
-    Main
-{% endblock %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{% static 'css/tables.css' %}">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
-{% block content %}
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+    <script src="{% static 'js/tables.js' %}"></script>
+</head>
+<body class="bg-dark" onload="animateValue('value', 0, 100, 1000); animateValue('value2', 0, 60, 1000);animateValue('value3', 0, 40, 1000)">
+
 <div class="container">
     <div class="jumbotron">
 		<br>
@@ -47,10 +62,19 @@
 			</div>
 		</div>
 		<br>
-        <div class="col text-center">
-            <a class="btn btn-dark btn-block" href="{% url 'add_record' %}" role="button">Add a new record</a>
+            <div class="dropdown text-center">
+              <button class="btn btn-outline-dark btn-lg dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Search or add an item
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="{% url 'add_record' %}">Add a new record</a>
+                <a class="dropdown-item" href="{% url 'search' %}">Search for records</a>
+              </div>
+            </div>
+
             <p></p>
             <hr>
+            {% if '/search/' in request.path %}
             <div class="form-group">
                 <input type="search" class="form-control" id="myInput"  name="search" onkeyup="filterTable()"  placeholder="Enter Site ID to search"> 
             </div>
@@ -91,18 +115,244 @@
                                     <td> {{ result.site_case }} </td>
                                     <td> {{ result.site_case }} </td>
                                     <td class="btn-group">
-                                        <a class="btn btn btn-info "  href="{{result.pk}}/"><i class="fa fa-info-circle" aria-hidden="true"></i></a>
+                                        <a class="btn btn btn-info "  href="/roapp/detail/{{result.pk}}"><i class="fa fa-info-circle" aria-hidden="true"></i></a>
                                         <a class="btn btn btn-success"  href="{% url 'site_edit' pk=result.pk %}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-                                        <a class="btn btn btn-danger" onclick="return confirm('Are you sure you want to delete this?')" href="{% url 'site_remove' pk=result.pk %}"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                                        <a class="btn btn btn-danger" data-toggle="modal" data-target="#exampleModal" ><i class="fa fa-trash-o" aria-hidden="true"></i></a>
                                     </td>
                                 </tr>
-                            {% endfor %}
                         </tbody>
                     </table>
+
+                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Confirm Delete</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            Are you sure you want to delete this record?
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-success" data-dismiss="modal">Cancel</button>
+                            <a type="button" class="btn btn-danger" href="{% url 'site_remove' pk=result.pk %}">Confirm Delete</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    {% endfor %}
+
+
+
                 </div>
-            </div>
+              </div>
+          {% endif %}
+
+          {% if 'add' in request.path  or 'edit' in request.path%}
+            <form class="form-group" action="" method="post">
+              <h3 class="display-4 text-center">Site Maintenance Form</h3>
+              {% csrf_token %}
+              <table class="table table-hover">
+                  <div class="form-row">
+                      <div class="form-group col-md-6 mb-0">
+                        {{ form.site_id|as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-6 mb-0">
+                        {{ form.consultant_name|as_crispy_field }}
+                      </div>
+                    </div>
+  
+                    <div class="form-row">
+                      <div class="form-group col-md-6 mb-0">
+                        {{ form.requester_dept|as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-6 mb-0">
+                        {{ form.status|as_crispy_field }}
+                      </div>
+                    </div>
+  
+                    <div class="form-row">
+                      <div class="form-group col-md-6 mb-0">
+                        {{ form.site_case|as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-6 mb-0">
+                        {{ form.building|as_crispy_field }}
+                      </div>
+                    </div>
+  
+                    <div class="form-row">
+                      <div class="form-group col-md-6 mb-0">
+                        {{ form.action_taken|as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-6 mb-0">
+                        {{ form.star_site|as_crispy_field }}
+                      </div>
+                    </div>
+  
+                    {{ form.remarks|as_crispy_field }}
+  
+                    <div class="form-row">
+                      <div class="form-group col-md-6 mb-0">
+                        {{ form.mail_name|as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-6 mb-0">
+                        {{ form.project_name|as_crispy_field }}
+                      </div>
+                    </div>
+  
+                    <div class="form-row">
+                      <div class="form-group col-md-6 mb-0">
+                        {{ form.max_rating_in|as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-6 mb-0">
+                        {{ form.consultant_recommendations|as_crispy_field }}
+                      </div>
+                    </div>
+                    {{ form.new_requirement|as_crispy_field }}
+  
+                    <div class="form-row">
+                      <div class="form-group col-md-6 mb-0">
+                        {{ form.request_date|as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-6 mb-0">
+                        {{ form.last_visit|as_crispy_field }}
+                      </div>
+                    </div>
+  
+                    <div class="form-row">
+                      <div class="form-group col-md-6 mb-0">
+                        {{ form.feedback|as_crispy_field }}
+                      </div>
+                      <div class="form-group col-md-6 mb-0">
+                        {{ form.max_rating_per|as_crispy_field }}
+                      </div>
+                    </div>
+                    
+                    </div>
+                    <div class="form-row">
+                    <div class="form-group col-md-12 mb-0">
+                      <label for="product">Employee Email: </label>
+                      <input class="form-control" type="text" name="product" id="product">
+                    </div>
+                    </div>
+                          
+              </table>
+              <button  name="submit" type="submit" class="btn btn-dark btn-info btn-block">Submit</button>
+              <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+              <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+              <script>
+                  $(function () {
+                      $("#product").autocomplete({
+                          source: '{% url 'autocomplete' %}',
+                          minLength: 2
+                      });
+                  });
+              </script>
+          </form>
+      {% endif %}
+
+
+      {% if 'detail' in request.path%}
+      <h3 class="display-4 text-center">Site Details</h3>
+      <table class="table table-hover">
+  
+        <tr class="row"> 
+          <td class="col-1"> </td>
+          <th class="col-3">Site ID</th>
+          <td class="col-2">{{site_details.site_id}} </td>
+          <td class="col-1"> </td>
+          <th class="col-3">Consultant Name</th>
+          <td class="col-2">{{site_details.consultant_name}}</td>
+        </tr>
+  
+        <tr class="row"> 
+          <td class="col-1"> </td>
+          <th class="col-3">Updated at </th>
+          <td class="col-2">{{site_details.updated_at}} </td>
+          <td class="col-1"> </td>
+          <th class="col-3">Consultant Name</th>
+          <td class="col-2">{{site_details.consultant_name}}</td>
+        </tr>
+        
+        <tr class="row"> 
+          <td class="col-1"> </td>
+          <th class="col-3">Site ID</th>
+          <td class="col-2">{{site_details.site_id}} </td>
+          <td class="col-1"> </td>
+          <th class="col-3">Consultant Name</th>
+          <td class="col-2">{{site_details.consultant_name}}</td>
+        </tr>
+  
+        <tr class="row"> 
+          <td class="col-1"> </td>
+          <th class="col-3">Site ID</th>
+          <td class="col-2">{{site_details.site_id}} </td>
+          <td class="col-1"> </td>
+          <th class="col-3">Consultant Name</th>
+          <td class="col-2">{{site_details.consultant_name}}</td>
+        </tr>
+  
+        <tr class="row"> 
+          <td class="col-1"> </td>
+          <th class="col-3">Site ID</th>
+          <td class="col-2">{{site_details.site_id}} </td>
+          <td class="col-1"> </td>
+          <th class="col-3">Consultant Name</th>
+          <td class="col-2">{{site_details.consultant_name}}</td>
+        </tr>
+  
+        <tr class="row"> 
+          <td class="col-1"> </td>
+          <th class="col-3">Site ID</th>
+          <td class="col-2">{{site_details.site_id}} </td>
+          <td class="col-1"> </td>
+          <th class="col-3">Consultant Name</th>
+          <td class="col-2">{{site_details.consultant_name}}</td>
+        </tr>
+  
+        <tr class="row"> 
+          <td class="col-1"> </td>
+          <th class="col-3">Site ID</th>
+          <td class="col-2">{{site_details.site_id}} </td>
+          <td class="col-1"> </td>
+          <th class="col-3">Consultant Name</th>
+          <td class="col-2">{{site_details.consultant_name}}</td>
+        </tr>
+  
+        <tr class="row">
+          <td class="col-2"></td>
+          <td class="col" >  <a class='btn btn-dark btn-block' href="{% url 'site_edit' pk=site_details.pk %}">Update</a> </td>
+          <td class="col">  <a class='btn btn-dark btn-block' data-toggle="modal" data-target="#exampleModal" >Delete</a>   </td>
+          <td class="col-2"></td>
+        </tr>
+  
+      </table>
+      <!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Confirm Delete</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete this record?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-dismiss="modal">Cancel</button>
+        <a type="button" class="btn btn-danger" href="{% url 'site_remove' pk=site_details.pk %}">Confirm Delete</a>
+      </div>
+    </div>
+  </div>
+</div>
+      {% endif %}
         </div>
     </div> 
 </div>
-{% endblock %}
 
+</body>
+</html>
