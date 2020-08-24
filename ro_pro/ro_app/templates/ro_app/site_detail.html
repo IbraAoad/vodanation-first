@@ -1,0 +1,88 @@
+{% extends 'ro_app/index.html' %}
+
+{% block title %}
+    Info
+{% endblock %}
+
+
+{% block content %}
+  
+<div class="container">
+  <div class="jumbotron">
+    <h3 class="display-4 text-center">Site Details</h3>
+    <table class="table table-hover">
+
+      <tr class="row"> 
+        <td class="col-1"> </td>
+        <th class="col-3">Site ID</th>
+        <td class="col-2">{{site_details.site_id}} </td>
+        <td class="col-1"> </td>
+        <th class="col-3">Consultant Name</th>
+        <td class="col-2">{{site_details.consultant_name}}</td>
+      </tr>
+
+      <tr class="row"> 
+        <td class="col-1"> </td>
+        <th class="col-3">Updated at </th>
+        <td class="col-2">{{site_details.updated_at}} </td>
+        <td class="col-1"> </td>
+        <th class="col-3">Consultant Name</th>
+        <td class="col-2">{{site_details.consultant_name}}</td>
+      </tr>
+      
+      <tr class="row"> 
+        <td class="col-1"> </td>
+        <th class="col-3">Site ID</th>
+        <td class="col-2">{{site_details.site_id}} </td>
+        <td class="col-1"> </td>
+        <th class="col-3">Consultant Name</th>
+        <td class="col-2">{{site_details.consultant_name}}</td>
+      </tr>
+
+      <tr class="row"> 
+        <td class="col-1"> </td>
+        <th class="col-3">Site ID</th>
+        <td class="col-2">{{site_details.site_id}} </td>
+        <td class="col-1"> </td>
+        <th class="col-3">Consultant Name</th>
+        <td class="col-2">{{site_details.consultant_name}}</td>
+      </tr>
+
+      <tr class="row"> 
+        <td class="col-1"> </td>
+        <th class="col-3">Site ID</th>
+        <td class="col-2">{{site_details.site_id}} </td>
+        <td class="col-1"> </td>
+        <th class="col-3">Consultant Name</th>
+        <td class="col-2">{{site_details.consultant_name}}</td>
+      </tr>
+
+      <tr class="row"> 
+        <td class="col-1"> </td>
+        <th class="col-3">Site ID</th>
+        <td class="col-2">{{site_details.site_id}} </td>
+        <td class="col-1"> </td>
+        <th class="col-3">Consultant Name</th>
+        <td class="col-2">{{site_details.consultant_name}}</td>
+      </tr>
+
+      <tr class="row"> 
+        <td class="col-1"> </td>
+        <th class="col-3">Site ID</th>
+        <td class="col-2">{{site_details.site_id}} </td>
+        <td class="col-1"> </td>
+        <th class="col-3">Consultant Name</th>
+        <td class="col-2">{{site_details.consultant_name}}</td>
+      </tr>
+
+      <tr class="row">
+        <td class="col-2"></td>
+        <td class="col" >  <a class='btn btn-dark btn-block' href="{% url 'site_edit' pk=site_details.pk %}">Update</a> </td>
+        <td class="col">  <a class='btn btn-dark btn-block' onclick="return confirm('Are you sure you want to delete this?')" href="{% url 'site_remove' pk=site_details.pk %}">Delete</a>   </td>
+        <td class="col-2"></td>
+      </tr>
+
+    </table>
+  </div>
+</div>
+{% endblock %}

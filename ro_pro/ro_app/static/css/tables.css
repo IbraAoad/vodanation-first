@@ -1,0 +1,12 @@
+#myTable a {
+    cursor: pointer;
+    }
+
+
+.table-wrapper {
+    max-height: 500px;
+    overflow: auto;
+    display:inline-block;
+      }
+
+
