@@ -5,76 +5,12 @@ from django.views.generic.list import ListView
 from django.views.generic import DetailView
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
-
+from ro_app.models import ConsVals,ReqVals,StatVals,SiteVals,BuilVals,ActVals,StarVals
 from ro_app.models import SiteData, SiteInfo
-
 from django.http import JsonResponse
 import json
 
 
-
-
-@login_required
-def add_view(request): 
-    site_form = SiteForm()
-    if request.method == 'POST':
-        site_form = SiteForm(request.POST)
-
-        if site_form.is_valid():
-            site_form.save(commit=False)
-            email_submitted = request.POST.get('product')
-            siteid_submitted = site_form.cleaned_data['site_id']
-            site_form.instance.email_address = email_submitted
-
-            try:
-                obj_filtered = SiteInfo.objects.get(email_address=email_submitted)
-                staff_id_value = getattr(obj_filtered, 'staff_id')
-            except ObjectDoesNotExist:
-                staff_id_value = "NANA"
-            site_form.instance.staff_id = staff_id_value
-
-            try:
-                obj_filtered = SiteInfo.objects.get(site_id=siteid_submitted)
-                area_value = getattr(obj_filtered, 'area')
-                rt_gf_value = getattr(obj_filtered, 'rt_gf')
-                str_type_value = getattr(obj_filtered, 'str_type')
-                height_value = getattr(obj_filtered, 'height')
-            except ObjectDoesNotExist:
-                area_value = "NANA"
-                rt_gf_value = "NANA"
-                str_type_value = "NANA"
-                height_value = "NANA"
-
-            site_form.instance.area = area_value
-            site_form.instance.rt_gf = rt_gf_value
-            site_form.instance.str_type = str_type_value
-            site_form.instance.height = height_value
-
-            if str(site_form.cleaned_data['status']) == "Pending":
-                site_form.instance.in_progress_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-            elif str(site_form.cleaned_data['status']) == "Done":
-                site_form.instance.done_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-
-            site_form.save(commit=True)
-            return redirect('search')
-
-    return render( request, "ro_app/ro_main.html", {'form': site_form})
-
-@login_required
-def update_view(request, pk):
-    context = {}
-    obj = get_object_or_404(SiteData, id = pk)
-    site_form = SiteForm(request.POST or None, instance = obj) 
-    if site_form.is_valid():
-        site_form.save(commit=False)
-        if site_form.cleaned_data['status'] == "Pending":
-            site_form.instance.in_progress_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        elif site_form.cleaned_data['status'] == "Done":
-            site_form.instance.done_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        site_form.save(commit=True)
-        return redirect('search')
-    context["form"] = site_form 
-    return render(request, "ro_app/ro_main.html", context) 
 
 @login_required
 def site_remove(request, pk):
@@ -102,3 +38,84 @@ def autocomplete(request):
             titles.append(product.email_address)
         return JsonResponse(titles, safe=False)
     return render(request, 'ro_app/ro_main.html')
+
+@login_required
+def modalview(request, pk = None):
+
+    cons_vals = ConsVals.objects.all()
+    req_vals = ReqVals.objects.all()
+    stat_vals = StatVals.objects.all()
+    site_vals = SiteVals.objects.all()
+    buil_vals = BuilVals.objects.all()
+    act_vals = ActVals.objects.all()
+    star_vals = StarVals.objects.all()
+
+    if pk:
+        inst = SiteData.objects.get(id=pk)
+    else:
+        inst = SiteData()
+
+    if request.method == 'POST':
+
+        inst.site_id= request.POST.get('site_id')
+        inst.consultant_name = ConsVals.objects.get(consultant_name = request.POST.get('consultant_name'))
+        inst.requester_dept = ReqVals.objects.get(requester_dept = request.POST.get('requester_dept'))
+        inst.status = StatVals.objects.get(status = request.POST.get('status'))
+        inst.site_case = SiteVals.objects.get(site_case = request.POST.get('site_case'))
+        inst.building = BuilVals.objects.get(building = request.POST.get('building'))
+        inst.action_taken = ActVals.objects.get(action_taken = request.POST.get('action_taken'))
+        inst.star_site = StarVals.objects.get(star_site = request.POST.get('star_site'))
+        inst.remarks= request.POST.get('Remarks')
+        inst.mail_name= request.POST.get('mail_name')
+        inst.project_name= request.POST.get('project_name')
+        inst.new_requirement= request.POST.get('new_requirement')
+        inst.request_date= request.POST.get('request_date')
+        inst.last_visit= request.POST.get('last_visit')
+        inst.feedback= request.POST.get('feedback')
+        inst.max_rating_per= request.POST.get('max_rating_per')
+        inst.email_address= request.POST.get('employee_email')
+        inst.max_rating_in= 'ay7aga'
+        inst.consultant_recommendations= 'ay7aga'
+
+        try:
+            obj_filtered = SiteInfo.objects.get(email_address=str(request.POST.get('employee_email')))
+            staff_id_value = getattr(obj_filtered, 'staff_id')
+        except ObjectDoesNotExist:
+            staff_id_value = "NANA"
+        inst.staff_id= staff_id_value
+
+        try:
+            obj_filtered = SiteInfo.objects.get(site_id=request.POST.get('site_id'))
+            area_value = getattr(obj_filtered, 'area')
+            rt_gf_value = getattr(obj_filtered, 'rt_gf')
+            str_type_value = getattr(obj_filtered, 'str_type')
+            height_value = getattr(obj_filtered, 'height')
+        except ObjectDoesNotExist:
+            area_value = "NANA"
+            rt_gf_value = "NANA"
+            str_type_value = "NANA"
+            height_value = "NANA"
+        inst.area = area_value
+        inst.rt_gf = rt_gf_value
+        inst.str_type = str_type_value
+        inst.height = height_value
+
+
+        if str(request.POST.get('status')) == "Pending":
+            inst.in_progress_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        elif str(request.POST.get('status')) == "Done":
+            inst.done_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    
+        inst.save()
+        
+        context= {'cons_vals': cons_vals,'req_vals': req_vals,
+        'stat_vals': stat_vals,'site_vals': site_vals,
+        'buil_vals': buil_vals,'act_vals': act_vals,
+        'star_vals': star_vals,'inst': inst}
+        return render(request, "ro_app/ro_main.html", context)
+    else:
+        context= {'cons_vals': cons_vals,'req_vals': req_vals,
+        'stat_vals': stat_vals,'site_vals': site_vals,
+        'buil_vals': buil_vals,'act_vals': act_vals,
+        'star_vals': star_vals,'inst': inst}
+        return render(request, "ro_app/ro_main.html", context)
