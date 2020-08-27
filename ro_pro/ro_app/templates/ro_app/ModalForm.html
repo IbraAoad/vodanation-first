@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+</head>
+<body>
+    <div class ="container">
+        <div class = "row">
+            <div class = "col-md-12">
+                <div class="modal fade" id="ModalForm">
+                  <form action="{% url 'modal' %}" class="form-group" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header " >
+                                <h1 class="col-12 modal-title text-center">Site Maintenance Form</h1>
+                            </div>
+                            <div class="modal-body">
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label for="site_id"> <b> Site ID:</b></label>
+                                            <div></div>
+                                            <input style="width:350px;" type="text" id="site_id" name = "site_id">
+                                        </div>
+                                        
+                                        <div class="col-md-6">
+                                            <label for="consultant_name"> <b>Consultant Name:</b></label>
+                                            <select style="width:350px;"  id="consultant_name" name = "consultant_name">
+                                              {% for val in cons_vals %}
+  
+                                              <option value="{{val}}">{{val}}</option>
+  
+                                              {% endfor%}
+                                          </select>
+
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                        <br>
+                                          <label for="requester_dept"><b>Requester Dept:</b></label>
+                                          <select style="width:350px;"  id="requester_dept" name = "requester_dept">
+                                            {% for val in req_vals %}
+
+                                            <option value="{{val}}">{{val}}</option>
+
+                                            {% endfor%}
+                                          </select>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                        <br>
+                                          <label for="status"><b>Status:</b></label>
+                                          <div></div>
+                                          <select style="width:350px;"  id="status" name = "status">
+                                            {% for val in stat_vals %}
+
+                                            <option value="{{val}}">{{val}}</option>
+
+                                            {% endfor%}
+                                          </select>
+
+                                        </div>
+                                    
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                        <br>
+                                          <label for="site_case"><b>Site Case:</b></label>
+                                          <select style="width:350px;"  id="site_case" name = "site_case">
+                                            {% for val in site_vals %}
+
+                                            <option value="{{val}}">{{val}}</option>
+
+                                            {% endfor%}
+                                          </select>
+
+                                        </div>
+
+                                        <div class="col-md-6">
+                                        <br>
+                                          <label for="building"><b>Building:</b></label>
+                                          <div></div>
+                                          <select style="width:350px;"  id="building" name = "building">
+                                            {% for val in buil_vals %}
+
+                                            <option value="{{val}}">{{val}}</option>
+
+                                            {% endfor%}
+                                          </select>
+
+                                        </div>
+                                    
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                        <br>
+                                          <label for="action_taken"><b>Action Taken:</b></label>
+                                          <select style="width:350px;"  id="action_taken" name = "action_taken">
+                                            {% for val in act_vals %}
+
+                                            <option value="{{val}}">{{val}}</option>
+
+                                            {% endfor%}
+                                          </select>
+
+                                        </div>
+
+                                        <div class="col-md-6">
+                                        <br>
+                                          <label for="star_site"><b>Star Site:</b></label>
+                                          <div></div>
+                                          <select style="width:350px;"  id="star_site" name = "star_site">
+                                            {% for val in star_vals %}
+
+                                            <option value="{{val}}">{{val}}</option>
+
+                                            {% endfor%}
+                                          </select>
+
+                                        </div>
+                                    
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                        <br>
+                                          <label for="remarks"><b>Remarks:</b></label>
+                                          <textarea class="form-control" rows="5" id="Remarks" name="Remarks"></textarea>
+                                        </div>
+
+                            
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                        <br>
+                                          <label for="mail_name"><b>Mail Name:</b></label>
+                                          <input style="width:350px;"type="text" id="mail_name" name = "mail_name">
+                                        </div>
+
+                                        <div class="col-md-6">
+                                        <br>
+                                          <label for="project_name"><b>Project Name:</b></label>
+                                          <div></div>
+                                          <input style="width:350px;"type="text" id="project_name" name = "project_name">
+                                        </div>
+                                    
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                        <br>
+                                          <label for="new_requirement"><b>New Requirement:</b></label>
+                                          <textarea class="form-control" rows="5" id="new_requirement" name="new_requirement"></textarea>
+                                        </div>
+
+                            
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                        <br>
+                                          <label for="request_date"><b>Request Date:</b></label>
+                                          <input style="width:350px;"type="date" id="request_date" name = "request_date">
+                                        </div>
+
+                                        <div class="col-md-6">
+                                        <br>
+                                          <label for="last_visit"><b>Last Visit:</b></label>
+                                          <div></div>
+                                          <input style="width:350px;"type="date" id="last_visit" name = "last_visit">
+                                        </div>
+                                    
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                        <br>
+                                          <label for="feedback"><b>Feedback:</b></label>
+                                          <input style="width:350px;"type="date" id="feedback" name = "feedback">
+                                        </div>
+
+                                        <div class="col-md-6">
+                                        <br>
+                                          <label for="max_rating_per"><b>Max Rating Per:</b></label>
+                                          <div></div>
+                                          <input style="width:350px;"type="text" id="max_rating_per" name = "max_rating_per">
+                                        </div>
+                                    
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                        <br>
+                                          <label for="employee_email"><b>Employee Email:</b></label>
+                                          <div></div>
+                                          <input style="width:350px;"type="text" id="employee_email" name = "employee_email">
+                                        </div>                                   
+                                    </div>
+                                  
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                          </form>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <button type="button" class="btn btn-primary"
+                href="#" data-toggle="modal" data-target="#ModalForm">
+                Add Record</button>
+
+                
+            </div>
+        </div>
+    </div>
+    <script src="http://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+
+</body>
+</html>
