@@ -88,3 +88,71 @@
     else{ 
     }
   }
+
+
+function modalAdder() {
+    var modalDiv = $("#modal-div");
+    $.ajax({
+        url: $("#addbutton").data( "url" ),
+        success: function(data) {
+        modalDiv.html(data);
+        $("#myEdit").modal();
+        }
+    });
+    };
+
+function modalEditor(clicked_id) {
+      var modalDiv = $("#modal-div");
+      var init_id = '#';
+      var id= init_id.concat(clicked_id)
+      $.ajax({
+          url: $(id).data( "url" ),
+          success: function(data) {
+          modalDiv.html(data);
+          $("#myEdit").modal();
+          }
+      });
+      };
+  
+function modalDetailor(clicked_id) {
+        var modalDiv = $("#modal-div");
+        var init_id = '#';
+        var id= init_id.concat(clicked_id)
+        $.ajax({
+            url: $(id).data( "url" ),
+            success: function(data) {
+            modalDiv.html(data);
+            $("#detailModal").modal();
+            }
+        });
+        };
+
+function modalRemover(clicked_id) {
+          var modalDiv = $("#modal-div");
+          var init_id = '#';
+          var id= init_id.concat(clicked_id)
+          $.ajax({
+              url: $(id).data( "url" ),
+              success: function(data) {
+              modalDiv.html(data);
+              $("#deleteModal").modal();
+              }
+          });
+          };
+
+
+function modalCloserAdd(){
+    $("#myEdit").removeClass("animate__rollIn").addClass("animate__rollOut")
+    // setTimeout(function() {$('#myEdit').modal('hide');}, 1500);
+    $(".modal-backdrop").remove()
+}
+
+function modalCloserEdit(){
+  $("#myEdit").removeClass("animate__backInUp").addClass("animate__backOutUp")
+  $(".modal-backdrop").remove()
+}
+
+function modalCloserDetail(){
+  $("#detailModal").removeClass("animate__flipInY").addClass("animate__flipOutY")
+  $(".modal-backdrop").remove()
+}

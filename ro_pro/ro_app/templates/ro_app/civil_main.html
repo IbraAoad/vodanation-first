@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Civil App</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{% static 'css/tables.css' %}">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css">
+
+</head>
+{% if '/roapp/search/' in request.path or 'success' in request.path%}
+<body class="bg-dark" onload="animateValue('value', 0, 100, 1000); animateValue('value2', 0, 60, 1000);animateValue('value3', 0, 40, 1000)">
+    <div class="container">
+        <div class="jumbotron">
+            <div class="row">
+                <div class="col">
+                    <div class="col-md">
+                        <div class="card text-center mb-3 bg-dark text-white">
+                              <div class="card-header">
+                                  <h5 class="card-title">Total Requests</h5>
+                              </div>
+                              <div class="card-body">
+                                <h3 class="card-title" id="value" ></h3>
+                              </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="col-md">
+                        <div class="card text-center mb-3 bg-info text-white">
+                              <div class="card-header">
+                                  <h5 class="card-title">In-progress Requests</h5>
+                              </div>
+                              <div class="card-body">
+                                <h3 class="card-title" id="value2" ></h3>
+                              </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="col-md">    
+                        <div class="card text-center mb-3 bg-dark text-white">
+                              <div class="card-header">
+                                  <h5 class="card-title">Finished Requests</h5>
+                              </div>
+                              <div class="card-body">
+                                <h3 class="card-title" id="value3" ></h3>
+                              </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% if 'success' in request.path%}
+            <div class="text-center">
+                <h1 class="display-3">Thank You!</h1>
+                {% if '/add/success/' in request.path%}
+                <p class="lead">Your request is recieved</p>
+                {% elif '/edit/success/' in request.path%}
+                <p class="lead">The record is now edited successfully</p>
+                {% elif '/delete/success/' in request.path%}
+                <p class="lead">The record is now deleted successfully</p>
+                {% endif %}
+                <hr>
+                <p>Having trouble? <a href="mailto:django@vodanation.com">Contact us</a></p>
+                <p class="lead"><a class="btn btn-primary btn-sm" href="{% url 'search' %}" role="button">Back to CivilApp</a></p>
+            </div>
+            {% endif %}
+            {% if 'roapp/search/' in request.path%}
+            <div class="form-group">
+                <div class="form-row">
+                    <p style="padding-left: 5%;";></p>
+                    <input type="search" class="form-control col-8 " id="myInput"  name="search" onkeyup="filterTable()"  placeholder="Enter Site ID to search"> 
+                    <p style="padding-left: 3%;";></p>
+                    <a class="btn btn btn-success col-2" onclick="modalAdder();"data-url="{% url 'main' %}" id="addbutton"> <i class="fa fa-plus" aria-hidden="true"></i> Add a new record</a>
+                </div>
+            </div>
+                <table>
+                    <tr>
+                        <th id="elementId"></th>
+                    </tr>
+                </table>
+                <div class="table-responsive">
+                    <div class="table-wrapper" >
+                        <table  class="table table-hover table-sm" id="myTable" >
+                            <thead>
+                                <tr id="wrapper" class="text-center">
+                                    <th scope="col" >Site ID <br><a  class="fa fa-sort-alpha-desc" onclick="sortTable(0)"></a></th>
+                                    <th scope="col">Consultant Name<br><a class="fa fa-sort-alpha-desc" onclick="sortTable(1)"></a></th>
+                                    <th scope="col">Site CS<br><a class="fa fa-sort-alpha-desc" onclick="sortTable(2)"> </a></th>
+                                    <th scope="col">Status<br><a class="fa fa-sort-alpha-desc" onclick="sortTable(3)"> </a></th>
+                                    <th scope="col">Building<br><a class="fa fa-sort-alpha-desc" onclick="sortTable(4)"> </a></th>
+                                    <th scope="col">Action Taken<br><a class="fa fa-sort-alpha-desc" onclick="sortTable(5)"> </a></th>
+                                    <th scope="col">Request Date<br><a class="fa fa-sort-alpha-desc" onclick="sortTable(6)"> </a></th>
+                                    <th scope="col">In-progress date<br><a class="fa fa-sort-alpha-desc" onclick="sortTable(7)" > </a></th>
+                                    <th scope="col">Done Date<br><a class="fa fa-sort-alpha-desc" onclick="sortTable(8)"> </a></th>
+                                    <th scope="col">Email Address<br><a class="fa fa-sort-alpha-desc" onclick="sortTable(9)"> </a></th>
+                                    <th scope="col">Actions<br><br></th>      
+                                </tr>
+                            </thead>
+                            <tbody >
+                                {% for result in all_search_results %}
+                                    <tr class="text-center">  
+                                        <td > <strong> {{ result.site_id }} </strong> </td>
+                                        <td> {{ result.consultant_name }} </td>
+                                        <td> {{ result.site_case }} </td>
+                                        <td> {{ result.status }} </td>
+                                        <td> {{ result.building }} </td>
+                                        <td> {{ result.action_taken }} </td>   
+                                        <td> {{ result.request_date }} </td>
+                                        <td> {{ result.in_progress_date }} </td>
+                                        <td> {{ result.done_date }} </td>
+                                        <td> {{ result.email_address }} </td>
+                                        <td class="btn-group">
+                                            <a class="btn  btn-info" onclick="modalDetailor(this.id);"data-url="{% url 'detail' pk=result.pk %}" id="detailbutton{{result.pk}}"><i class="fa fa-info-circle" title="Record info"  aria-hidden="true"></i></a>
+                                            <a class="btn btn-success" onclick="modalEditor(this.id);"data-url="{% url 'site_edit' pk=result.pk %}" id="editbutton{{result.pk}}"><i class="fa fa-pencil-square-o" title="Edit Record" aria-hidden="true"></i></a>
+                                            <a class="btn  btn-danger" onclick="modalRemover(this.id);"data-url="{% url 'site_remove' pk=result.pk %}" id="deletebutton{{result.pk}}"><i class="fa fa-trash-o" title="Delete Record"  aria-hidden="true"></i></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+        </div>
+    </div>
+    {% endif %}
+<!-- MODALS SECTION -->
+{% if '/roapp/main/' in request.path or '/roapp/edit/' in request.path%}
+    {% if inst.pk %}
+    <div class="modal animate__animated animate__backInUp" id="myEdit">
+      <form  class="form-group" method="POST" action="{% url 'site_edit' pk=inst.pk %}">
+      {% else %}
+    <div class="modal animate__animated animate__rollIn" id="myEdit">
+      <form  class="form-group" method="POST" action="{% url 'main' %}">
+      {% endif %}
+      {% csrf_token %}
+      <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header " >
+            {% if inst.pk %}
+            <h1 class="col-12 modal-title text-center">Edit Record of Site with ID {{inst.site_id}}</h1>
+            {% else %}
+            <h1 class="col-12 modal-title text-center">Add a new record</h1>
+            {% endif %}
+          </div>
+            <div class="modal-body">
+              <div class="container">
+                    <div class="form-row">
+                      <div class="form-group col-md-6">
+                          <label for="site_id">Site ID</label>
+                          {% if inst.pk %}
+                          <input type="text" class="form-control" id="site_id" name = "site_id" value="{{inst.site_id}}">
+                          {% else %}
+                          <input type="text" class="form-control" id="site_id" name = "site_id" placeholder="Site ID">
+                          {% endif %}
+                      </div>
+                      <div class="form-group col-md-6">
+                          <label for="consultant_name">Consultant Name</label>
+                          <select class="form-control" id="consultant_name" name = "consultant_name">
+                            {% for val in cons_vals %}
+                            <option value="{{val}}">{{val}}</option>
+                            {% endfor%}
+                          </select>
+                      </div>
+                  </div>
+                  <div class="form-row">
+                      <div class="form-group col-md-6">
+                        <label for="requester_dept">Requester Dept</label>
+                        <select class="form-control" id="requester_dept" name = "requester_dept">
+                          {% for val in req_vals %}
+                          <option value="{{val}}">{{val}}</option>
+                          {% endfor%}
+                        </select>
+                      </div>
+                      <div class="form-group col-md-6">
+                        <label for="status">Status</label>
+                        <select class="form-control" id="status" name = "status">
+                          {% for val in stat_vals %}
+                          <option value="{{val}}">{{val}}</option>
+                          {% endfor%}
+                        </select>
+                      </div>
+                  </div>
+                  <div class="form-row">
+                      <div class="form-group col-md-6">
+                        <label for="site_case">Site Case</label>
+                        <select class="form-control" id="site_case" name = "site_case">
+                          {% for val in site_vals %}
+                          <option value="{{val}}">{{val}}</option>
+                          {% endfor%}
+                        </select>
+                      </div>
+                      <div class="form-group col-md-6">
+                        <label for="building">Building</label>
+                        <select class="form-control" id="building" name = "building">
+                          {% for val in buil_vals %}
+                          <option value="{{val}}">{{val}}</option>
+                          {% endfor%}
+                        </select>
+                      </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group col-md-6">
+                      <label for="action_taken">Action Taken</label>
+                      <select class="form-control" id="action_taken" name = "action_taken">
+                        {% for val in act_vals %}
+                        <option value="{{val}}">{{val}}</option>
+                        {% endfor%}
+                      </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                      <label for="star_site">Star Site</label>
+                      <select class="form-control"  id="star_site" name = "star_site">
+                        {% for val in star_vals %}
+                        <option value="{{val}}">{{val}}</option>
+                        {% endfor%}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="remarks">Remarks </label>
+                    <textarea class="form-control" rows="5" id="Remarks" name="Remarks"></textarea>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group col-md-6">
+                      <label for="mail_name">Mail Name</label>
+                      <input class="form-control"type="text" id="mail_name" name = "mail_name">
+                    </div>
+                    <div class="form-group col-md-6">
+                      <label for="project_name">Project Name</label>
+                      <input class="form-control"type="text" id="project_name" name = "project_name">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="new_requirement">New Requirement</label>
+                    <textarea class="form-control" rows="5" id="new_requirement" name="new_requirement"></textarea>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group col-md-6">
+                      <label for="request_date">Request Date</label>
+                      <input class="form-control"type="date" id="request_date" name = "request_date">
+                    </div>
+                    <div class="form-group col-md-6">
+                      <label for="last_visit">Last Visit</label>
+                      <input class="form-control"type="date" id="last_visit" name = "last_visit">
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group col-md-6">
+                      <label for="feedback">Feedback</label>
+                      <input class="form-control"type="date" id="feedback" name = "feedback">
+                    </div>
+                    <div class="form-group col-md-6">
+                      <label for="max_rating_per">Max Rating Per</label>
+                      <input class="form-control" type="number" id="max_rating_per" name = "max_rating_per">
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group col-md-6">
+                      <label for="employee_email">Employee Email</label>
+                      <input class="form-control"type="email" id="employee_email" name = "employee_email">
+                    </div>                                   
+                  </div>
+              </div>
+          </div>
+          <div class="modal-footer">
+            {% if inst.pk %}
+            <button type="button" class="btn btn-secondary" id= 'closer' onclick="modalCloserEdit();">Cancel</button>
+              {% else %}
+            <button type="button" class="btn btn-secondary" id= 'closer' onclick="modalCloserAdd();">Cancel</button>
+            {% endif %}
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+          </form>
+        </div>
+      </div>
+    </div>
+{% endif %}
+
+{% if '/roapp/detail/' in request.path %}
+<div class="modal fade animate__animated animate__flipInY" id="detailModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-scrollable modal-lg">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="col-12 modal-title text-center" id="exampleModalLabel">Record details of Site with ID {{site_details.site_id}}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="container">
+        <table class="table table-sm table-hover table-striped table-borderless">
+            <tr class="row"> 
+                <th class="col-2">Site ID</th>
+                <td class="col-4">{{site_details.site_id}} </td>
+                <th class="col-2">Consultant Name</th>
+                <td class="col-4">{{site_details.consultant_name}}</td>
+            </tr>
+            <tr class="row"> 
+                <th class="col-2">Site case</th>
+                <td class="col-4">{{site_details.site_case}} </td>
+                <th class="col-2">Requester Dept</th>
+                <td class="col-4">{{site_details.requester_dept}}</td>
+            </tr>
+            <tr class="row"> 
+                <th class="col-2">Status</th>
+                <td class="col-4">{{site_details.status}} </td>
+                <th class="col-2">Action taken</th>
+                <td class="col-4">{{site_details.action_taken}}</td>
+            </tr>
+            <tr class="row"> 
+                <th class="col-2">Remarks</th>
+                <td class="col-10">{{site_details.remarks}} </td>
+            </tr>
+            <tr class="row"> 
+                <th class="col-2">In-progress date</th>
+                <td class="col-2">{{site_details.in_progress_date}} </td>
+                <th class="col-2">Done date</th>
+                <td class="col-2">{{site_details.done_date}}</td>
+                <th class="col-2">Area</th>
+                <td class="col-2">{{site_details.area}}</td>
+            </tr>
+            <tr class="row"> 
+                <th class="col-2">Updated at</th>
+                <td class="col-2">{{site_details.updated_at}} </td>
+                <th class="col-2">Employee Email</th>
+                <td class="col-2">{{site_details.email_address}}</td>
+                <th class="col-2">RT/GF</th>
+                <td class="col-2">{{site_details.rt_gf}}</td>
+            </tr>
+          </table>
+        </div>
+    </div>
+    <div class="modal-footer text-center">
+      <button type="button" class="btn btn-secondary" onclick="modalCloserDetail();">Close</button>
+    </div>
+  </div>
+</div>
+</div>
+{% endif %}
+
+{% if 'roapp/remove/' in request.path %}
+<div class="modal fade animate__animated animate__tada" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Confirm Delete</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this record?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal">Cancel</button>
+                <a type="button" class="btn btn-danger" href="{% url 'delete_success' pk=site.pk %}">Confirm Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+    <script src="{% static 'js/tables.js' %}"></script>
+
+    <div id="modal-div"></div>
+
+
+</body>
+</html>

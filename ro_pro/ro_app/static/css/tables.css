@@ -1,8 +1,11 @@
 #myTable a {
     cursor: pointer;
     }
-
-
+#myTable th {
+        font-size: 14px;}
+#myTable td {
+        font-size: 13px;
+     }
 .table-wrapper {
     max-height: 500px;
     overflow: auto;

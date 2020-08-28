@@ -1,33 +1,41 @@
 from django.shortcuts import render , get_object_or_404, redirect
-from ro_app.forms import SiteForm
 from django.contrib.auth.decorators import login_required
 from django.views.generic.list import ListView
 from django.views.generic import DetailView
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
-from ro_app.models import ConsVals,ReqVals,StatVals,SiteVals,BuilVals,ActVals,StarVals
-from ro_app.models import SiteData, SiteInfo
+from ro_app.models import ConsVals,ReqVals,StatVals,SiteVals,BuilVals,ActVals,StarVals,SiteData, SiteInfo
 from django.http import JsonResponse
 import json
 
+def add_confirmation(request):
+    return render(request, 'ro_app/civil_main.html')
+
+def edit_confirmation(request):
+    return render(request, 'ro_app/civil_main.html')
+
+def delete_confirmation(request, pk):
+    site = get_object_or_404(SiteData, pk=pk)
+    site.delete()
+    return render(request, 'ro_app/civil_main.html')
 
 
 @login_required
 def site_remove(request, pk):
     site = get_object_or_404(SiteData, pk=pk)
-    site.delete()
-    return redirect('search')
+    context = {'site': site}
+    return render(request, "ro_app/civil_main.html", context)
 
 
 class SearchView(ListView):
     model = SiteData
-    template_name = 'ro_app/ro_main.html'
+    template_name = 'ro_app/civil_main.html'
     context_object_name = 'all_search_results'
 
 
 class SiteDetailView(DetailView):
     model = SiteData
-    template_name = 'ro_app/ro_main.html'
+    template_name = 'ro_app/civil_main.html'
     context_object_name = 'site_details'
 
 def autocomplete(request):
@@ -37,7 +45,8 @@ def autocomplete(request):
         for product in qs:
             titles.append(product.email_address)
         return JsonResponse(titles, safe=False)
-    return render(request, 'ro_app/ro_main.html')
+    return render(request, 'ro_app/civil_main.html')
+
 
 @login_required
 def modalview(request, pk = None):
@@ -105,17 +114,15 @@ def modalview(request, pk = None):
             inst.in_progress_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         elif str(request.POST.get('status')) == "Done":
             inst.done_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-    
         inst.save()
-        
-        context= {'cons_vals': cons_vals,'req_vals': req_vals,
-        'stat_vals': stat_vals,'site_vals': site_vals,
-        'buil_vals': buil_vals,'act_vals': act_vals,
-        'star_vals': star_vals,'inst': inst}
-        return render(request, "ro_app/ro_main.html", context)
+
+        if pk:
+            return redirect('edit_success')
+        else:
+            return redirect('add_success')
     else:
         context= {'cons_vals': cons_vals,'req_vals': req_vals,
         'stat_vals': stat_vals,'site_vals': site_vals,
         'buil_vals': buil_vals,'act_vals': act_vals,
         'star_vals': star_vals,'inst': inst}
-        return render(request, "ro_app/ro_main.html", context)
+        return render(request, "ro_app/civil_main.html", context)
