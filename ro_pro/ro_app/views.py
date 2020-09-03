@@ -8,30 +8,24 @@ from ro_app.models import ConsVals,ReqVals,StatVals,SiteVals,BuilVals,ActVals,St
 from django.http import JsonResponse
 import json
 
-def add_confirmation(request):
-    return render(request, 'ro_app/civil_main.html')
-
-def edit_confirmation(request):
-    return render(request, 'ro_app/civil_main.html')
-
-def delete_confirmation(request, pk):
-    site = get_object_or_404(SiteData, pk=pk)
-    site.delete()
-    return render(request, 'ro_app/civil_main.html')
-
-
 @login_required
 def site_remove(request, pk):
-    site = get_object_or_404(SiteData, pk=pk)
-    context = {'site': site}
-    return render(request, "ro_app/civil_main.html", context)
-
+    deleted = None
+    if request.method == 'POST':
+        site = get_object_or_404(SiteData, pk=pk)
+        deleted = f'Record with site id {site.site_id} is deleted successfully'
+        context= {'deleted': deleted, 'site':site}
+        #site.delete()
+        return redirect('search')
+    else:
+        site = get_object_or_404(SiteData, pk=pk)
+        context= {'deleted': deleted, 'site':site}
+        return render(request, "ro_app/civil_main.html",context)
 
 class SearchView(ListView):
     model = SiteData
     template_name = 'ro_app/civil_main.html'
     context_object_name = 'all_search_results'
-
 
 class SiteDetailView(DetailView):
     model = SiteData
@@ -47,10 +41,11 @@ def autocomplete(request):
         return JsonResponse(titles, safe=False)
     return render(request, 'ro_app/civil_main.html')
 
-
 @login_required
 def modalview(request, pk = None):
 
+    added = None
+    edited = None
     cons_vals = ConsVals.objects.all()
     req_vals = ReqVals.objects.all()
     stat_vals = StatVals.objects.all()
@@ -69,7 +64,10 @@ def modalview(request, pk = None):
         inst.site_id= request.POST.get('site_id')
         inst.consultant_name = ConsVals.objects.get(consultant_name = request.POST.get('consultant_name'))
         inst.requester_dept = ReqVals.objects.get(requester_dept = request.POST.get('requester_dept'))
+
+        #logic needs to be created for status
         inst.status = StatVals.objects.get(status = request.POST.get('status'))
+
         inst.site_case = SiteVals.objects.get(site_case = request.POST.get('site_case'))
         inst.building = BuilVals.objects.get(building = request.POST.get('building'))
         inst.action_taken = ActVals.objects.get(action_taken = request.POST.get('action_taken'))
@@ -86,13 +84,14 @@ def modalview(request, pk = None):
         inst.max_rating_in= 'ay7aga'
         inst.consultant_recommendations= 'ay7aga'
 
-        try:
-            obj_filtered = SiteInfo.objects.get(email_address=str(request.POST.get('employee_email')))
-            staff_id_value = getattr(obj_filtered, 'staff_id')
-        except ObjectDoesNotExist:
-            staff_id_value = "NANA"
-        inst.staff_id= staff_id_value
+        # try:
+        #     obj_filtered = SiteInfo.objects.get(email_address=str(request.POST.get('employee_email')))
+        #     staff_id_value = getattr(obj_filtered, 'staff_id')
+        # except ObjectDoesNotExist:
+        #     staff_id_value = "NANA"
+        # inst.staff_id= staff_id_value
 
+        #Will be converted to servant app
         try:
             obj_filtered = SiteInfo.objects.get(site_id=request.POST.get('site_id'))
             area_value = getattr(obj_filtered, 'area')
@@ -109,7 +108,7 @@ def modalview(request, pk = None):
         inst.str_type = str_type_value
         inst.height = height_value
 
-
+        #logic needs to be created for status
         if str(request.POST.get('status')) == "Pending":
             inst.in_progress_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         elif str(request.POST.get('status')) == "Done":
@@ -117,9 +116,21 @@ def modalview(request, pk = None):
         inst.save()
 
         if pk:
-            return redirect('edit_success')
+            edited = f'Record with site id {inst.site_id} is edited successfully'
+            context= {'cons_vals': cons_vals,'req_vals': req_vals,
+            'stat_vals': stat_vals,'site_vals': site_vals,
+            'buil_vals': buil_vals,'act_vals': act_vals,
+            'star_vals': star_vals,'inst': inst,'edited': edited }
+            return render(request, "ro_app/civil_main.html", context)
+
         else:
-            return redirect('add_success')
+            added = f'Record with site id {inst.site_id} is created successfully'
+            context= {'cons_vals': cons_vals,'req_vals': req_vals,
+            'stat_vals': stat_vals,'site_vals': site_vals,
+            'buil_vals': buil_vals,'act_vals': act_vals,
+            'star_vals': star_vals,'inst': inst,'added': added }
+            return render(request, "ro_app/civil_main.html", context)
+
     else:
         context= {'cons_vals': cons_vals,'req_vals': req_vals,
         'stat_vals': stat_vals,'site_vals': site_vals,
