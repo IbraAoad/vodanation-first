@@ -11,10 +11,12 @@
     <link rel="stylesheet" href="{% static 'css/tables.css' %}">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
 </head>
-{% if '/roapp/search/' in request.path or 'success' in request.path%}
 <body class="bg-dark" onload="animateValue('value', 0, 100, 1000); animateValue('value2', 0, 60, 1000);animateValue('value3', 0, 40, 1000)">
+
+{% if '/roapp/search/' in request.path or 'success' in request.path%}
     <div class="container">
         <div class="jumbotron">
             <div class="row">
@@ -56,28 +58,14 @@
                 </div>
             </div>
             {% endif %}
-            {% if added or edited or deleted %}
-            <div class="text-center">
-                <h1 class="display-3">Success!</h1>
-                {% if added %}
-                  <p class="lead">{{added}}</p>
-                {% elif edited %}
-                  <p class="lead">{{edited}}</p>
-                {% elif deleted %}
-                  <p class="lead">{{deleted}}</p>
-                {% endif %}
-                <hr>
-                <p>Having trouble? <a href="mailto:django@vodanation.com">Contact us</a></p>
-                <p class="lead"><a class="btn btn-primary btn-sm" href="{% url 'search' %}" role="button">Back to CivilApp</a></p>
-            </div>
-            {% endif %}
+
             {% if '/roapp/search/' in request.path%}
             <div class="form-group">
                 <div class="form-row">
                     <p style="padding-left: 5%;";></p>
                     <input type="search" class="form-control col-8 " id="myInput"  name="search" onkeyup="filterTable()"  placeholder="Enter Site ID to search"> 
                     <p style="padding-left: 3%;";></p>
-                    <a class="btn btn btn-success col-2" onclick="modalAdder();" data-url="{% url 'main' %}" id="addbutton"> <i class="fa fa-plus" aria-hidden="true"></i> Add a new record</a>
+                    <a class="btn btn btn-success col-2" onclick="modalAdder();" data-url="{% url 'add' %}" id="addbutton"> <i class="fa fa-plus" aria-hidden="true"></i> Add a new record</a>
                 </div>
             </div>
                 <table>
@@ -134,7 +122,7 @@
 
 {% if '/roapp/remove/' in request.path %}
 <div class="modal fade animate__animated animate__tada" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <form  class="form-group" method="POST" action="{% url 'site_remove' pk=site.pk %}">
+  <form  class="form-group" method="POST" action="{% url 'site_remove' pk=inst.pk %}">
     {% csrf_token %}
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -149,7 +137,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" data-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-danger" >Confirm Delete</button>
+                <button id="btndelete" type="submit" class="btn btn-danger" name="delete_modal_button">Confirm Delete</button>
             </div>
             </form>
         </div>
@@ -157,13 +145,13 @@
 </div>
 {% endif %}
 
-{% if '/roapp/main/' in request.path or '/roapp/edit/' in request.path%}
+{% if '/roapp/add/' in request.path or '/roapp/edit/' in request.path%}
     {% if inst.pk %}
     <div class="modal animate__animated animate__backInUp" id="myEdit">
       <form  class="form-group" method="POST" action="{% url 'site_edit' pk=inst.pk %}">
       {% else %}
     <div class="modal animate__animated animate__rollIn" id="myEdit">
-      <form  class="form-group" method="POST" action="{% url 'main' %}">
+      <form  class="form-group" method="POST" action="{% url 'add' %}">
       {% endif %}
       {% csrf_token %}
       <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
@@ -301,7 +289,7 @@
               {% else %}
             <button type="button" class="btn btn-secondary" id= 'closer' onclick="modalCloserAdd();">Cancel</button>
             {% endif %}
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button id = "btnAdd" type="submit" class="btn btn-primary" name="edit_add_modal_button">Submit</button>
           </div>
           </form>
         </div>
@@ -314,48 +302,48 @@
 <div class="modal-dialog modal-dialog-scrollable modal-lg">
   <div class="modal-content">
     <div class="modal-header">
-      <h2 class="col-12 modal-title text-center" id="exampleModalLabel">Record details of Site with ID {{site_details.site_id}}</h2>
+      <h2 class="col-12 modal-title text-center" id="exampleModalLabel">Record details of Site with ID {{inst.site_id}}</h2>
     </div>
     <div class="modal-body">
         <div class="container">
         <table class="table table-sm table-hover table-striped table-borderless">
             <tr class="row"> 
                 <th class="col-2">Site ID</th>
-                <td class="col-4">{{site_details.site_id}} </td>
+                <td class="col-4">{{inst.site_id}} </td>
                 <th class="col-2">Consultant Name</th>
-                <td class="col-4">{{site_details.consultant_name}}</td>
+                <td class="col-4">{{inst.consultant_name}}</td>
             </tr>
             <tr class="row"> 
                 <th class="col-2">Site case</th>
-                <td class="col-4">{{site_details.site_case}} </td>
+                <td class="col-4">{{inst.site_case}} </td>
                 <th class="col-2">Requester Dept</th>
-                <td class="col-4">{{site_details.requester_dept}}</td>
+                <td class="col-4">{{inst.requester_dept}}</td>
             </tr>
             <tr class="row"> 
                 <th class="col-2">Status</th>
-                <td class="col-4">{{site_details.status}} </td>
+                <td class="col-4">{{inst.status}} </td>
                 <th class="col-2">Action taken</th>
-                <td class="col-4">{{site_details.action_taken}}</td>
+                <td class="col-4">{{inst.action_taken}}</td>
             </tr>
             <tr class="row"> 
                 <th class="col-2">Remarks</th>
-                <td class="col-10">{{site_details.remarks}} </td>
+                <td class="col-10">{{inst.remarks}} </td>
             </tr>
             <tr class="row"> 
                 <th class="col-2">In-progress date</th>
-                <td class="col-2">{{site_details.in_progress_date}} </td>
+                <td class="col-2">{{inst.in_progress_date}} </td>
                 <th class="col-2">Done date</th>
-                <td class="col-2">{{site_details.done_date}}</td>
+                <td class="col-2">{{inst.done_date}}</td>
                 <th class="col-2">Area</th>
-                <td class="col-2">{{site_details.area}}</td>
+                <td class="col-2">{{inst.area}}</td>
             </tr>
             <tr class="row"> 
                 <th class="col-2">Updated at</th>
-                <td class="col-2">{{site_details.updated_at}} </td>
+                <td class="col-2">{{inst.updated_at}} </td>
                 <th class="col-2">Employee Email</th>
-                <td class="col-2">{{site_details.email_address}}</td>
+                <td class="col-2">{{inst.email_address}}</td>
                 <th class="col-2">RT/GF</th>
-                <td class="col-2">{{site_details.rt_gf}}</td>
+                <td class="col-2">{{inst.rt_gf}}</td>
             </tr>
           </table>
         </div>
@@ -372,9 +360,27 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
     <script src="{% static 'js/tables.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
     <div id="modal-div"></div>
 
+    {% if messages %}
+      {% for message in messages %}
+      {% if message.tags == 'error' %}
+      <script>
+        $(document).ready(function() {
+          toastr.error('{{message}}')
+          });
+      </script>
+      {% else %}
+        <script>
+          $(document).ready(function() {
+            toastr.success('{{message}}')
+            });
+        </script>
+    {% endif %}
+      {% endfor %}
+    {% endif %}
 
 </body>
 </html>

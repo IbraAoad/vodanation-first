@@ -1,36 +1,11 @@
 from django.shortcuts import render , get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.views.generic.list import ListView
-from django.views.generic import DetailView
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 from ro_app.models import ConsVals,ReqVals,StatVals,SiteVals,BuilVals,ActVals,StarVals,SiteData, SiteInfo
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 import json
-
-@login_required
-def site_remove(request, pk):
-    deleted = None
-    if request.method == 'POST':
-        site = get_object_or_404(SiteData, pk=pk)
-        deleted = f'Record with site id {site.site_id} is deleted successfully'
-        context= {'deleted': deleted, 'site':site}
-        #site.delete()
-        return redirect('search')
-    else:
-        site = get_object_or_404(SiteData, pk=pk)
-        context= {'deleted': deleted, 'site':site}
-        return render(request, "ro_app/civil_main.html",context)
-
-class SearchView(ListView):
-    model = SiteData
-    template_name = 'ro_app/civil_main.html'
-    context_object_name = 'all_search_results'
-
-class SiteDetailView(DetailView):
-    model = SiteData
-    template_name = 'ro_app/civil_main.html'
-    context_object_name = 'site_details'
+from django.contrib import messages
 
 def autocomplete(request):
     if 'term' in request.GET:
@@ -42,10 +17,13 @@ def autocomplete(request):
     return render(request, 'ro_app/civil_main.html')
 
 @login_required
-def modalview(request, pk = None):
+def civil_view(request, pk = None):
 
-    added = None
-    edited = None
+    if '/roapp/search/' in request.path:
+        search_data = SiteData.objects.all()
+        context= {'all_search_results': search_data}
+        return render(request, "ro_app/civil_main.html", context)
+        
     cons_vals = ConsVals.objects.all()
     req_vals = ReqVals.objects.all()
     stat_vals = StatVals.objects.all()
@@ -59,7 +37,12 @@ def modalview(request, pk = None):
     else:
         inst = SiteData()
 
-    if request.method == 'POST':
+    if request.method == 'POST' and 'delete_modal_button' in request.POST:
+        #inst.delete()
+        messages.error(request, "Deleted Successfully!")
+        return redirect('search')
+
+    if request.method == 'POST' and 'edit_add_modal_button' in request.POST:
 
         inst.site_id= request.POST.get('site_id')
         inst.consultant_name = ConsVals.objects.get(consultant_name = request.POST.get('consultant_name'))
@@ -116,20 +99,12 @@ def modalview(request, pk = None):
         inst.save()
 
         if pk:
-            edited = f'Record with site id {inst.site_id} is edited successfully'
-            context= {'cons_vals': cons_vals,'req_vals': req_vals,
-            'stat_vals': stat_vals,'site_vals': site_vals,
-            'buil_vals': buil_vals,'act_vals': act_vals,
-            'star_vals': star_vals,'inst': inst,'edited': edited }
-            return render(request, "ro_app/civil_main.html", context)
+            messages.success(request, "Edited Successfully!")
+            return redirect('search')
 
         else:
-            added = f'Record with site id {inst.site_id} is created successfully'
-            context= {'cons_vals': cons_vals,'req_vals': req_vals,
-            'stat_vals': stat_vals,'site_vals': site_vals,
-            'buil_vals': buil_vals,'act_vals': act_vals,
-            'star_vals': star_vals,'inst': inst,'added': added }
-            return render(request, "ro_app/civil_main.html", context)
+            messages.success(request, "Added Successfully!")
+            return redirect('search')
 
     else:
         context= {'cons_vals': cons_vals,'req_vals': req_vals,
