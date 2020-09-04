@@ -17,7 +17,7 @@ def autocomplete(request):
     return render(request, 'ro_app/civil_main.html')
 
 @login_required
-def civil_view(request, pk = None):
+def civil_fn(request, pk = None):
 
     if '/roapp/search/' in request.path:
         search_data = SiteData.objects.all()
@@ -33,46 +33,46 @@ def civil_view(request, pk = None):
     star_vals = StarVals.objects.all()
 
     if pk:
-        inst = SiteData.objects.get(id=pk)
+        civil_request = SiteData.objects.get(id=pk)
     else:
-        inst = SiteData()
+        civil_request = SiteData()
 
     if request.method == 'POST' and 'delete_modal_button' in request.POST:
-        #inst.delete()
+        #civil_request.delete()
         messages.error(request, "Deleted Successfully!")
         return redirect('search')
 
     if request.method == 'POST' and 'edit_add_modal_button' in request.POST:
 
-        inst.site_id= request.POST.get('site_id')
-        inst.consultant_name = ConsVals.objects.get(consultant_name = request.POST.get('consultant_name'))
-        inst.requester_dept = ReqVals.objects.get(requester_dept = request.POST.get('requester_dept'))
+        civil_request.site_id= request.POST.get('site_id')
+        civil_request.consultant_name = ConsVals.objects.get(consultant_name = request.POST.get('consultant_name'))
+        civil_request.requester_dept = ReqVals.objects.get(requester_dept = request.POST.get('requester_dept'))
 
         #logic needs to be created for status
-        inst.status = StatVals.objects.get(status = request.POST.get('status'))
+        civil_request.status = StatVals.objects.get(status = request.POST.get('status'))
 
-        inst.site_case = SiteVals.objects.get(site_case = request.POST.get('site_case'))
-        inst.building = BuilVals.objects.get(building = request.POST.get('building'))
-        inst.action_taken = ActVals.objects.get(action_taken = request.POST.get('action_taken'))
-        inst.star_site = StarVals.objects.get(star_site = request.POST.get('star_site'))
-        inst.remarks= request.POST.get('Remarks')
-        inst.mail_name= request.POST.get('mail_name')
-        inst.project_name= request.POST.get('project_name')
-        inst.new_requirement= request.POST.get('new_requirement')
-        inst.request_date= request.POST.get('request_date')
-        inst.last_visit= request.POST.get('last_visit')
-        inst.feedback= request.POST.get('feedback')
-        inst.max_rating_per= request.POST.get('max_rating_per')
-        inst.email_address= request.POST.get('employee_email')
-        inst.max_rating_in= 'ay7aga'
-        inst.consultant_recommendations= 'ay7aga'
+        civil_request.site_case = SiteVals.objects.get(site_case = request.POST.get('site_case'))
+        civil_request.building = BuilVals.objects.get(building = request.POST.get('building'))
+        civil_request.action_taken = ActVals.objects.get(action_taken = request.POST.get('action_taken'))
+        civil_request.star_site = StarVals.objects.get(star_site = request.POST.get('star_site'))
+        civil_request.remarks= request.POST.get('Remarks')
+        civil_request.mail_name= request.POST.get('mail_name')
+        civil_request.project_name= request.POST.get('project_name')
+        civil_request.new_requirement= request.POST.get('new_requirement')
+        civil_request.request_date= request.POST.get('request_date')
+        civil_request.last_visit= request.POST.get('last_visit')
+        civil_request.feedback= request.POST.get('feedback')
+        civil_request.max_rating_per= request.POST.get('max_rating_per')
+        civil_request.email_address= request.POST.get('employee_email')
+        civil_request.max_rating_in= 'ay7aga'
+        civil_request.consultant_recommendations= 'ay7aga'
 
         # try:
         #     obj_filtered = SiteInfo.objects.get(email_address=str(request.POST.get('employee_email')))
         #     staff_id_value = getattr(obj_filtered, 'staff_id')
         # except ObjectDoesNotExist:
         #     staff_id_value = "NANA"
-        # inst.staff_id= staff_id_value
+        # civil_request.staff_id= staff_id_value
 
         #Will be converted to servant app
         try:
@@ -86,17 +86,17 @@ def civil_view(request, pk = None):
             rt_gf_value = "NANA"
             str_type_value = "NANA"
             height_value = "NANA"
-        inst.area = area_value
-        inst.rt_gf = rt_gf_value
-        inst.str_type = str_type_value
-        inst.height = height_value
+        civil_request.area = area_value
+        civil_request.rt_gf = rt_gf_value
+        civil_request.str_type = str_type_value
+        civil_request.height = height_value
 
         #logic needs to be created for status
         if str(request.POST.get('status')) == "Pending":
-            inst.in_progress_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+            civil_request.in_progress_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         elif str(request.POST.get('status')) == "Done":
-            inst.done_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        inst.save()
+            civil_request.done_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        civil_request.save()
 
         if pk:
             messages.success(request, "Edited Successfully!")
@@ -110,5 +110,5 @@ def civil_view(request, pk = None):
         context= {'cons_vals': cons_vals,'req_vals': req_vals,
         'stat_vals': stat_vals,'site_vals': site_vals,
         'buil_vals': buil_vals,'act_vals': act_vals,
-        'star_vals': star_vals,'inst': inst}
+        'star_vals': star_vals,'civil_request': civil_request}
         return render(request, "ro_app/civil_main.html", context)

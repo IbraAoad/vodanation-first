@@ -122,7 +122,7 @@
 
 {% if '/roapp/remove/' in request.path %}
 <div class="modal fade animate__animated animate__tada" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <form  class="form-group" method="POST" action="{% url 'site_remove' pk=inst.pk %}">
+  <form  class="form-group" method="POST" action="{% url 'site_remove' pk=civil_request.pk %}">
     {% csrf_token %}
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -146,9 +146,9 @@
 {% endif %}
 
 {% if '/roapp/add/' in request.path or '/roapp/edit/' in request.path%}
-    {% if inst.pk %}
+    {% if civil_request.pk %}
     <div class="modal animate__animated animate__backInUp" id="myEdit">
-      <form  class="form-group" method="POST" action="{% url 'site_edit' pk=inst.pk %}">
+      <form  class="form-group" method="POST" action="{% url 'site_edit' pk=civil_request.pk %}">
       {% else %}
     <div class="modal animate__animated animate__rollIn" id="myEdit">
       <form  class="form-group" method="POST" action="{% url 'add' %}">
@@ -157,8 +157,8 @@
       <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header " >
-            {% if inst.pk %}
-            <h1 class="col-12 modal-title text-center">Edit Record of Site with ID {{inst.site_id}}</h1>
+            {% if civil_request.pk %}
+            <h1 class="col-12 modal-title text-center">Edit Record of Site with ID {{civil_request.site_id}}</h1>
             {% else %}
             <h1 class="col-12 modal-title text-center">Add a new record</h1>
             {% endif %}
@@ -168,8 +168,8 @@
                     <div class="form-row">
                       <div class="form-group col-md-6">
                           <label for="site_id">Site ID</label>
-                          {% if inst.pk %}
-                          <input type="text" class="form-control" id="site_id" name = "site_id" value="{{inst.site_id}}">
+                          {% if civil_request.pk %}
+                          <input type="text" class="form-control" id="site_id" name = "site_id" value="{{civil_request.site_id}}">
                           {% else %}
                           <input type="text" class="form-control" id="site_id" name = "site_id" placeholder="Site ID">
                           {% endif %}
@@ -284,7 +284,7 @@
               </div>
           </div>
           <div class="modal-footer">
-            {% if inst.pk %}
+            {% if civil_request.pk %}
             <button type="button" class="btn btn-secondary" id= 'closer' onclick="modalCloserEdit();">Cancel</button>
               {% else %}
             <button type="button" class="btn btn-secondary" id= 'closer' onclick="modalCloserAdd();">Cancel</button>
@@ -302,48 +302,48 @@
 <div class="modal-dialog modal-dialog-scrollable modal-lg">
   <div class="modal-content">
     <div class="modal-header">
-      <h2 class="col-12 modal-title text-center" id="exampleModalLabel">Record details of Site with ID {{inst.site_id}}</h2>
+      <h2 class="col-12 modal-title text-center" id="exampleModalLabel">Record details of Site with ID {{civil_request.site_id}}</h2>
     </div>
     <div class="modal-body">
         <div class="container">
         <table class="table table-sm table-hover table-striped table-borderless">
             <tr class="row"> 
                 <th class="col-2">Site ID</th>
-                <td class="col-4">{{inst.site_id}} </td>
+                <td class="col-4">{{civil_request.site_id}} </td>
                 <th class="col-2">Consultant Name</th>
-                <td class="col-4">{{inst.consultant_name}}</td>
+                <td class="col-4">{{civil_request.consultant_name}}</td>
             </tr>
             <tr class="row"> 
                 <th class="col-2">Site case</th>
-                <td class="col-4">{{inst.site_case}} </td>
+                <td class="col-4">{{civil_request.site_case}} </td>
                 <th class="col-2">Requester Dept</th>
-                <td class="col-4">{{inst.requester_dept}}</td>
+                <td class="col-4">{{civil_request.requester_dept}}</td>
             </tr>
             <tr class="row"> 
                 <th class="col-2">Status</th>
-                <td class="col-4">{{inst.status}} </td>
+                <td class="col-4">{{civil_request.status}} </td>
                 <th class="col-2">Action taken</th>
-                <td class="col-4">{{inst.action_taken}}</td>
+                <td class="col-4">{{civil_request.action_taken}}</td>
             </tr>
             <tr class="row"> 
                 <th class="col-2">Remarks</th>
-                <td class="col-10">{{inst.remarks}} </td>
+                <td class="col-10">{{civil_request.remarks}} </td>
             </tr>
             <tr class="row"> 
                 <th class="col-2">In-progress date</th>
-                <td class="col-2">{{inst.in_progress_date}} </td>
+                <td class="col-2">{{civil_request.in_progress_date}} </td>
                 <th class="col-2">Done date</th>
-                <td class="col-2">{{inst.done_date}}</td>
+                <td class="col-2">{{civil_request.done_date}}</td>
                 <th class="col-2">Area</th>
-                <td class="col-2">{{inst.area}}</td>
+                <td class="col-2">{{civil_request.area}}</td>
             </tr>
             <tr class="row"> 
                 <th class="col-2">Updated at</th>
-                <td class="col-2">{{inst.updated_at}} </td>
+                <td class="col-2">{{civil_request.updated_at}} </td>
                 <th class="col-2">Employee Email</th>
-                <td class="col-2">{{inst.email_address}}</td>
+                <td class="col-2">{{civil_request.email_address}}</td>
                 <th class="col-2">RT/GF</th>
-                <td class="col-2">{{inst.rt_gf}}</td>
+                <td class="col-2">{{civil_request.rt_gf}}</td>
             </tr>
           </table>
         </div>
